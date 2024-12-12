@@ -1,7 +1,7 @@
 import pygame
 
 class Objeto():
-    def __init__(self, x=20, y=30, imagenes=[], intervalo_cambio=500):
+    def __init__(self, x=20, y=30, imagenes=[], intervalo_cambio=0):
 
         self.visible=True
 

@@ -16,6 +16,20 @@ IMAGEN_PJ= [
 ]
 
 FRUTA=[pygame.image.load('image/fruta01.png')]
+NUMEROS=[
+    pygame.image.load('image/numero0.png'), 
+    pygame.image.load('image/numero1.png'),
+     pygame.image.load('image/numero2.png'), 
+    pygame.image.load('image/numero3.png'),
+
+    pygame.image.load('image/numero4.png'), 
+    pygame.image.load('image/numero5.png'),
+     pygame.image.load('image/numero6.png'), 
+    pygame.image.load('image/numero7.png'),
+
+    pygame.image.load('image/numero8.png'), 
+    pygame.image.load('image/numero9.png')
+]
 
 
 

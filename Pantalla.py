@@ -10,12 +10,23 @@ class Ventana():
         pygame.init()
         self.ventana=pygame.display.set_mode((ancho,alto))
         pygame.display.set_caption("prueba")
+        self.reloj =pygame.time.Clock()
+        self.tiempo_inicio = pygame.time.get_ticks()
 
         self.fondo=fondo
         #Objetos
         self.jugador=Objeto.Movimiento(900,50,const.IMAGEN_PJ,100)
 
         self.fruta=Objeto.Objeto(100,70,const.FRUTA)
+
+        self.temporizador1=Objeto.Objeto(440,50,const.NUMEROS,10000)
+        self.temporizador2=Objeto.Objeto(510,50,const.NUMEROS,1000)
+
+
+    def __temporizador(self): 
+        tiempo_actual = pygame.time.get_ticks() 
+        segundos_transcurridos = (tiempo_actual - self.tiempo_inicio) // 1000 
+        return segundos_transcurridos
 
     def __generar_manzana(self):
         self.fruta.reposicionar(random.randint(22, 925),random.randint(15, 600))
@@ -29,10 +40,12 @@ class Ventana():
             self.ventana.blit(self.fondo,(0,0))
             self.jugador.dibujar(self.ventana)
             self.fruta.dibujar(self.ventana)
-
+            self.temporizador1.dibujar(self.ventana)
+            self.temporizador2.dibujar(self.ventana)
             #Cambiar sprite
             self.jugador.cambiar_imagen()
-
+            self.temporizador1.cambiar_imagen()
+            self.temporizador2.cambiar_imagen()
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -57,7 +70,10 @@ class Ventana():
                     self.__generar_manzana()
 
 
+            
+
             pygame.display.flip()  # Actualizar pantalla
+            
 
 
         pygame.quit()
