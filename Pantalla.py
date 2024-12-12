@@ -1,4 +1,5 @@
 import pygame
+import random
 import Constantes as const
 import Objeto 
 
@@ -14,13 +15,25 @@ class Ventana():
         #Objetos
         self.jugador=Objeto.Movimiento(900,50,const.IMAGEN_PJ,100)
 
+        self.fruta=Objeto.Objeto(100,70,const.FRUTA)
+
+    def __generar_manzana(self):
+        self.fruta.reposicionar(random.randint(22, 925),random.randint(15, 600))
+        self.fruta.mostrar_objeto()
+
     def ejecutar(self):
         run =True
 
         while run:
+            #Mostrar en pantalla
             self.ventana.blit(self.fondo,(0,0))
             self.jugador.dibujar(self.ventana)
+            self.fruta.dibujar(self.ventana)
+
+            #Cambiar sprite
             self.jugador.cambiar_imagen()
+
+
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
                     run=False
@@ -33,6 +46,16 @@ class Ventana():
                 self.jugador.mover_arriba() 
             if teclas[pygame.K_s] or teclas[pygame.K_DOWN]: 
                 self.jugador.mover_abajo()
+
+            if self.jugador.verificar_colision(self.fruta.rect_colision) and self.fruta.visible:
+                self.fruta.desaparecer()
+                print("¡Colisión detectada!")
+
+            if not self.fruta.visible:
+                aparecer_fruta=random.randint(0,1000)
+                if aparecer_fruta==10:
+                    self.__generar_manzana()
+
 
             pygame.display.flip()  # Actualizar pantalla
 

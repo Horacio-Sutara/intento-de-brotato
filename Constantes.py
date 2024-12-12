@@ -15,5 +15,7 @@ IMAGEN_PJ= [
     pygame.image.load('image/personaje03.png')
 ]
 
+FRUTA=[pygame.image.load('image/fruta01.png')]
+
 
 
