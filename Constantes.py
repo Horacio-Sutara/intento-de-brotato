@@ -2,7 +2,7 @@ import pygame
 #Ventana
 ANCHO_VENTANA=1000
 ALTO_VENTANA=700
-
+BG=pygame.image.load('image/fondo01.png')
 
 #Personaje
 ALTO_PERSONAJE=80

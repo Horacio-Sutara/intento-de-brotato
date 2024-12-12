@@ -5,11 +5,12 @@ import Objeto
 
 
 class Ventana():
-    def __init__(self,ancho,alto):
+    def __init__(self,ancho,alto,fondo):
         pygame.init()
         self.ventana=pygame.display.set_mode((ancho,alto))
         pygame.display.set_caption("prueba")
 
+        self.fondo=fondo
         #Objetos
         self.jugador=Objeto.Objeto(50,50,const.IMAGEN_PJ,100)
 
@@ -17,8 +18,7 @@ class Ventana():
         run =True
 
         while run:
-            
-            self.ventana.fill((0, 0, 0))  # Limpiar pantalla
+            self.ventana.blit(self.fondo,(0,0))
             self.jugador.dibujar(self.ventana)
             self.jugador.cambiar_imagen()
             for event in pygame.event.get():
@@ -31,5 +31,5 @@ class Ventana():
         pygame.quit()
 
 
-ventana=Ventana(const.ANCHO_VENTANA,const.ALTO_VENTANA)
+ventana=Ventana(const.ANCHO_VENTANA,const.ALTO_VENTANA,const.BG)
 ventana.ejecutar()
