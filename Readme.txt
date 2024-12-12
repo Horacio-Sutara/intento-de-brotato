@@ -1,1 +1,2 @@
 Instrucciones: 
+importar pygame

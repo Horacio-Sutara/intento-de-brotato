@@ -1,0 +1,8 @@
+#Ventana
+ANCHO_VENTANA=1000
+ALTO_VENTANA=700
+
+
+
+
+
