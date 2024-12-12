@@ -11,20 +11,21 @@ class Ventana():
         pygame.display.set_caption("prueba")
 
         #Objetos
-        self.jugador=Objeto.Objeto(50,50)
+        self.jugador=Objeto.Objeto(50,50,const.IMAGEN_PJ,100)
 
     def ejecutar(self):
         run =True
 
         while run:
-
+            
+            self.ventana.fill((0, 0, 0))  # Limpiar pantalla
             self.jugador.dibujar(self.ventana)
-
+            self.jugador.cambiar_imagen()
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
                     run=False
 
-            pygame.display.update()
+            pygame.display.flip()  # Actualizar pantalla
 
 
         pygame.quit()
