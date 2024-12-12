@@ -12,7 +12,7 @@ class Ventana():
 
         self.fondo=fondo
         #Objetos
-        self.jugador=Objeto.Objeto(50,50,const.IMAGEN_PJ,100)
+        self.jugador=Objeto.Movimiento(900,50,const.IMAGEN_PJ,100)
 
     def ejecutar(self):
         run =True
@@ -24,6 +24,15 @@ class Ventana():
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
                     run=False
+            teclas = pygame.key.get_pressed() 
+            if teclas[pygame.K_a] or teclas[pygame.K_LEFT]: 
+                self.jugador.mover_izquierda() 
+            if teclas[pygame.K_d] or teclas[pygame.K_RIGHT]: 
+                self.jugador.mover_derecha() 
+            if teclas[pygame.K_w] or teclas[pygame.K_UP]: 
+                self.jugador.mover_arriba() 
+            if teclas[pygame.K_s] or teclas[pygame.K_DOWN]: 
+                self.jugador.mover_abajo()
 
             pygame.display.flip()  # Actualizar pantalla
 

@@ -18,7 +18,7 @@ class Objeto():
         self.intervalo_cambio = intervalo_cambio  # Intervalo de tiempo en milisegundos para cambiar la imagen
         self.tiempo_ultimo_cambio = pygame.time.get_ticks()
         # Crear el rectángulo de colisión más pequeño
-        self.rect_colision = pygame.Rect(x, y, self.rect_imagen.width, 80)
+        self.rect_colision = pygame.Rect(x, y, self.rect_imagen.width, self.rect_imagen.height)
 
     def dibujar(self, interfaz):
         # Dibujar la imagen actual
@@ -39,3 +39,31 @@ class Objeto():
     def verificar_colision(self, otro_rect):
         # Verificar colisión con el rectángulo de colisión más pequeño
         return self.rect_colision.colliderect(otro_rect)
+    
+class Movimiento(Objeto):
+
+    def __init__(self, x=20, y=30, imagenes=[], intervalo_cambio=500):
+        super().__init__(x, y, imagenes, intervalo_cambio)
+        self.x=x
+        self.y=y
+    def mover_izquierda(self,mover=1):
+        
+        if self.rect_imagen.x>=22:
+            self.rect_imagen.x-=mover
+            self.rect_colision.x-=mover
+
+    def mover_derecha(self,mover=1):
+        if self.rect_imagen.x<=925:
+            self.rect_imagen.x+=mover
+            self.rect_colision.x+=mover
+
+    def mover_arriba(self,mover=1):
+        if self.rect_imagen.y>=15:
+            self.rect_imagen.y-=mover
+            self.rect_colision.y-=mover
+            
+
+    def mover_abajo(self,mover=1):
+        if self.rect_imagen.y<=600:
+            self.rect_imagen.y +=mover
+            self.rect_colision.y +=mover
