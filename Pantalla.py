@@ -5,9 +5,11 @@ import Objeto
 import Menu
 import Sonido
 from Arma import Arma
-
+from Arma import Bala
 class Ventana():
-    def __init__(self,ancho,alto,fondo,personaje_imagen,hp_imagenes,Numeros_imagen, fruta_imagen,enemigo1_imagen,boton_reintentar,boton_menu,sonido_boton,sonido_golpe,sonido_cura,arma_imagen,bala_imagen,sonido_bala):
+    def __init__(self,ancho,alto,fondo,personaje_imagen,
+                 hp_imagenes,Numeros_imagen, fruta_imagen,enemigo1_imagen,boton_reintentar,
+                 boton_menu,sonido_boton,sonido_golpe,sonido_cura,arma_imagen,bala_imagen,sonido_bala):
         pygame.init()
         self.ventana=pygame.display.set_mode((ancho,alto))
         pygame.display.set_caption("prueba")
@@ -23,15 +25,25 @@ class Ventana():
         self.temporizador1=Objeto.Objeto(440,20,Numeros_imagen,10000)
              
         self.arma=Arma(850,250,arma_imagen)
-        self.bala=[Objeto.Objeto(800,200,fruta_imagen) for i in range (10)]
+        self.bala=[Bala(800,200,bala_imagen) for i in range (10)]
 
 
         self.menu_perder=Menu.Menu(self.ventana,fondo,420,200,boton_reintentar,420,400,boton_menu,sonido_boton)
 
         self.golpe_enemigo=Sonido.Sonido(sonido_golpe)
-        self.golpe_enemigo.ajustar_volumen(0.2)
+        
+
+        self.sonido_bala=Sonido.Sonido(sonido_bala)
+        
         self.cura=Sonido.Sonido(sonido_cura)
+
+
+
+        self.golpe_enemigo.ajustar_volumen(0.2)
+        self.sonido_bala.ajustar_volumen(0.2)
         self.cura.ajustar_volumen(0.2)
+
+
 
 
     def __generar_objeto(self,objeto):
@@ -42,17 +54,17 @@ class Ventana():
         teclas = pygame.key.get_pressed() 
         if teclas[pygame.K_a] or teclas[pygame.K_LEFT]:
             for objeto in objetos:
-                objeto.mover_izquierda(2) 
+                objeto.mover_izquierda(3) 
 
         if teclas[pygame.K_d] or teclas[pygame.K_RIGHT]: 
             for objeto in objetos:
-                objeto.mover_derecha(2) 
+                objeto.mover_derecha(3) 
         if teclas[pygame.K_w] or teclas[pygame.K_UP]: 
             for objeto in objetos:
-                objeto.mover_arriba(2) 
+                objeto.mover_arriba(3) 
         if teclas[pygame.K_s] or teclas[pygame.K_DOWN]: 
             for objeto in objetos:
-                objeto.mover_abajo(2)
+                objeto.mover_abajo(3)
 
     def atrapar(self, enemigos, personaje):
         for i in range(len(enemigos)):
@@ -77,6 +89,7 @@ class Ventana():
         self.arma.reposicionar(850,250)
         self.jugador.reposicionar(900,200)
         while run:
+            enemigo_visible=self.enemigo_visible(self.enemigos)
             #Mostrar en pantialla
             self.ventana.blit(self.fondo,(0,0))
             self.jugador.dibujar(self.ventana)
@@ -84,6 +97,19 @@ class Ventana():
             self.hp.dibujar(self.ventana)
 
             self.arma.detectar_proximo(self.enemigos)
+            if enemigo_visible:
+                for i in range (len(self.bala)):
+                    if not self.bala[i].visible:
+                        self.bala[i].disparar(self.arma.rect_imagen.x,self.arma.rect_imagen.y,self.enemigos)
+                        self.sonido_bala.reproducir()
+                        i=len(self.bala)
+            for i in self.bala:
+                i.desaparecer()
+                i.mover()
+                i.dibujar(self.ventana)
+
+
+
 
             for i in range(len(self.frutas)):
                 self.frutas[i].dibujar(self.ventana)
@@ -130,6 +156,11 @@ class Ventana():
             pygame.display.flip()  # Actualizar pantalla
             
         
+    def enemigo_visible(self,enemigos):
+        for i in enemigos:
+            if i.visible:
+                return True
+        return False
 
     
     def juego(self):

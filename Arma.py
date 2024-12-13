@@ -3,6 +3,7 @@ from Objeto import Movimiento
 import math
 
 class Arma (Movimiento):
+
     def __init__(self, x=20, y=30, imagenes=..., intervalo_cambio=0):
         super().__init__(x, y, imagenes, intervalo_cambio)
         self.angulo = 0  # Ángulo inicial de rotación
@@ -68,8 +69,6 @@ class Arma (Movimiento):
         if 0<angulo_grados<=90:
             self.flip_horizontal=True
       
-        
-        print(f"El ángulo en grados es: {angulo_grados}")
 
     def detectar_proximo(self,objetivos):
         distancia_menor=1800
@@ -86,3 +85,65 @@ class Arma (Movimiento):
                     distancia_menor=distancia_total
                     indice=i
         self.apuntar(objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y)
+
+
+class Bala(Movimiento):
+
+    def __init__(self, x=20, y=30, imagenes=..., intervalo_cambio=500):
+        super().__init__(x, y, imagenes, intervalo_cambio)
+        self.velocidad=0
+        self.adelante_x=False
+        self.adelante_y=False
+
+    def disparar(self,x,y,objetivos,velocidad_inicial=7):
+        self.reposicionar(x,y)
+        self.mostrar_objeto()
+        self.velocidad=velocidad_inicial
+        self.direccion(objetivos)
+
+    def desaparecer(self):
+        if self.velocidad<=0:
+            self.visible=False
+    
+    def detectar_proximo(self,objetivos):
+        distancia_menor=1800
+        indice=0
+        for i in range(len(objetivos)):
+            
+            if objetivos[i].visible:
+                distancia_y= objetivos[i].rect_imagen.y-self.rect_imagen.y
+                if distancia_y<0:distancia_y*=-1
+                distancia_x=objetivos[i].rect_imagen.x-self.rect_imagen.x
+                if distancia_x<0: distancia_x*=-1
+                distancia_total=distancia_x+distancia_y
+                if distancia_total<distancia_menor:
+                    distancia_menor=distancia_total
+                    indice=i
+        return objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y
+    
+    def direccion(self,objetivos):
+        x,y =self.detectar_proximo(objetivos)
+
+        if self.rect_imagen.x<x:
+            self.adelante_x=True
+        else:
+            self.adelante_x=False
+        if self.rect_imagen.y<y:
+            self.adelante_y=True
+        else:
+            self.adelante_y=False
+
+    def mover(self,friccion=0.1):
+            if self.visible:
+                if self.adelante_x:
+                    self.mover_derecha()
+                else:
+                    self.mover_izquierda()
+                if self.adelante_y:
+                    self.mover_abajo()
+                else:
+                    self.mover_arriba()
+                self.velocidad-=friccion
+        
+
+
