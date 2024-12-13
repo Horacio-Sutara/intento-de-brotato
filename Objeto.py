@@ -21,16 +21,26 @@ class Objeto():
             imagen_actual = self.imagenes[self.indice_imagen]
             interfaz.blit(imagen_actual, self.rect_imagen.topleft)
 
-    def cambiar_imagen(self):
+    def cambiar_imagen(self,disminuir=None):
         tiempo_actual = pygame.time.get_ticks()
         if tiempo_actual - self.tiempo_ultimo_cambio >= self.intervalo_cambio:
             self.indice += 1
+            if disminuir is not None:
+                self.indice-=2
             if self.indice >= len(self.imagenes):
                 self.indice = 0
+            if self.indice<0:
+                self.indice=9
             self.indice_imagen = self.indice
             self.rect_imagen = self.imagenes[self.indice_imagen].get_rect()
             self.rect_imagen.topleft = self.rect_colision.topleft
             self.tiempo_ultimo_cambio = tiempo_actual
+    def cambiar_imagen_indice(self,indice):
+        self.indice=indice
+        self.indice_imagen=indice
+        self.rect_imagen = self.imagenes[self.indice_imagen].get_rect()
+        self.rect_imagen.topleft = self.rect_colision.topleft
+        self.tiempo_ultimo_cambio = pygame.time.get_ticks()
 
     def verificar_colision(self, otro_rect):
         if self.visible:
@@ -54,24 +64,59 @@ class Movimiento(Objeto):
         super().__init__(x, y, imagenes, intervalo_cambio)
         self.x=x
         self.y=y
-    def mover_izquierda(self,mover=1):
+        self.velocidad=1
+    def mover_izquierda(self,mover=None):
         
+        if mover is not None:
+            self.velocidad=mover
+
         if self.rect_imagen.x>=22:
-            self.rect_imagen.x-=mover
-            self.rect_colision.x-=mover
+            self.rect_imagen.x-=self.velocidad
+            self.rect_colision.x-=self.velocidad
 
-    def mover_derecha(self,mover=1):
+    def mover_derecha(self,mover=None):
+        if mover is not None:
+            self.velocidad=mover
         if self.rect_imagen.x<=925:
-            self.rect_imagen.x+=mover
-            self.rect_colision.x+=mover
+            self.rect_imagen.x+=self.velocidad
+            self.rect_colision.x+=self.velocidad
 
-    def mover_arriba(self,mover=1):
-        if self.rect_imagen.y>=15:
-            self.rect_imagen.y-=mover
-            self.rect_colision.y-=mover
+    def mover_arriba(self,mover=None):
+        if mover is not None:
+            self.velocidad=mover
+        if self.rect_imagen.y>=115:
+            self.rect_imagen.y-=self.velocidad
+            self.rect_colision.y-=self.velocidad
             
 
-    def mover_abajo(self,mover=1):
-        if self.rect_imagen.y<=600:
-            self.rect_imagen.y +=mover
-            self.rect_colision.y +=mover
+    def mover_abajo(self,mover=None):
+        if mover is not None:
+            self.velocidad=mover
+        if self.rect_imagen.y<=700:
+            self.rect_imagen.y +=self.velocidad
+            self.rect_colision.y +=self.velocidad
+
+
+class vida(Objeto):
+    def __init__(self, x=20, y=30, imagenes=[], intervalo_cambio=0,hp=8):
+        super().__init__(x, y, imagenes, intervalo_cambio)
+        self.hp=hp
+        self.hp_max=hp
+    def regular_vida(self,daño=None,curar=None):
+        
+        if daño is not None:
+            self.hp-=daño
+        if curar is not None:
+            self.hp+=curar
+        
+        if self.hp>self.hp_max and curar is not None:self.hp=self.hp_max
+        if self.hp<0:self.hp=0
+
+        porcentaje=(self.hp*100)//self.hp_max
+        indice=((len(self.imagenes)-1)*porcentaje)//100
+        indice=len(self.imagenes)-indice-1
+        self.cambiar_imagen_indice(indice=indice)
+    
+    def aumentar_hp(self,cantidad=1):
+        self.hp_max+=cantidad
+        self.regular_vida()
