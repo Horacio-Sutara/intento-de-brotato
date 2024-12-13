@@ -102,6 +102,7 @@ class vida(Objeto):
         super().__init__(x, y, imagenes, intervalo_cambio)
         self.hp=hp
         self.hp_max=hp
+        self.hp_inicial=hp
     def regular_vida(self,daño=None,curar=None):
         
         if daño is not None:
@@ -116,7 +117,11 @@ class vida(Objeto):
         indice=((len(self.imagenes)-1)*porcentaje)//100
         indice=len(self.imagenes)-indice-1
         self.cambiar_imagen_indice(indice=indice)
-    
+    def resetear(self):
+        self.hp_max=self.hp_inicial
+        self.hp=self.hp_inicial
+        self.regular_vida()
+
     def aumentar_hp(self,cantidad=1):
         self.hp_max+=cantidad
         self.regular_vida()

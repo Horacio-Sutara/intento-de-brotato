@@ -4,6 +4,14 @@ ANCHO_VENTANA=1000
 ALTO_VENTANA=800
 BG=pygame.image.load('image/fondo02.png')
 
+
+# sonido
+puntaje_sonido="Sound//puntaje.wav"
+muerte_sonido="Sound//muerte.wav"
+boton_sonido="Sound//boton.wav"
+GOLPE_ENEMIGO="Sound//golpe_enemigo.wav"
+CURA="Sound//cura.wav"
+BALA_SONIDO="Sound//bala.wav"
 #Personaje
 ALTO_PERSONAJE=80
 ANCHO_PERSONAJE=50
@@ -15,6 +23,9 @@ IMAGEN_PJ= [
     pygame.image.load('image/personaje03.png')
 ]
 
+ARMA=[pygame.image.load('image/arma.png')
+]
+BALA=[pygame.image.load('image/bala.png')]
 HP=[
     pygame.image.load('image/vida01.png'), 
     pygame.image.load('image/vida02.png'),
@@ -31,6 +42,14 @@ HP=[
 
 
 
+]
+BOTON_REINTENTAR=[
+    pygame.image.load('image/Volver-a-jugar.png'), 
+    pygame.image.load('image/Volver-a-jugar1.png')
+]
+BOTON_MENU=[
+    pygame.image.load('image/Volver-al-menu.png'), 
+    pygame.image.load('image/Volver-al-menu1.png')
 ]
 
 FRUTA=[pygame.image.load('image/fruta01.png')]
