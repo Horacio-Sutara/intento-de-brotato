@@ -11,7 +11,10 @@ class Objeto():
         self.rect_imagen.topleft = (x, y)
         self.indice = 0
         self.intervalo_cambio = intervalo_cambio  # Intervalo de tiempo en milisegundos para cambiar la imagen
-        self.tiempo_ultimo_cambio = pygame.time.get_ticks()
+        self.acumulador_tiempo=0
+        self.posicion_inicial_x=x
+        self.posicion_inicial_y=y
+        
         # Crear el rectángulo de colisión más pequeño
         self.rect_colision = pygame.Rect(x, y, self.rect_imagen.width, self.rect_imagen.height)
 
@@ -21,9 +24,10 @@ class Objeto():
             imagen_actual = self.imagenes[self.indice_imagen]
             interfaz.blit(imagen_actual, self.rect_imagen.topleft)
 
-    def cambiar_imagen(self,disminuir=None):
-        tiempo_actual = pygame.time.get_ticks()
-        if tiempo_actual - self.tiempo_ultimo_cambio >= self.intervalo_cambio:
+    def cambiar_imagen(self,disminuir=None,tiempo=17):
+
+        self.acumulador_tiempo+=tiempo
+        if self.acumulador_tiempo>= self.intervalo_cambio:
             self.indice += 1
             if disminuir is not None:
                 self.indice-=2
@@ -34,13 +38,13 @@ class Objeto():
             self.indice_imagen = self.indice
             self.rect_imagen = self.imagenes[self.indice_imagen].get_rect()
             self.rect_imagen.topleft = self.rect_colision.topleft
-            self.tiempo_ultimo_cambio = tiempo_actual
+            self.acumulador_tiempo -=self.intervalo_cambio
     def cambiar_imagen_indice(self,indice):
         self.indice=indice
         self.indice_imagen=indice
         self.rect_imagen = self.imagenes[self.indice_imagen].get_rect()
         self.rect_imagen.topleft = self.rect_colision.topleft
-        self.tiempo_ultimo_cambio = pygame.time.get_ticks()
+        self.acumulador_tiempo-=self.acumulador_tiempo
 
     def verificar_colision(self, otro_rect):
         if self.visible:
@@ -53,7 +57,11 @@ class Objeto():
     def desaparecer(self):
         self.visible=False
     
-    def reposicionar(self,x,y):
+    def reposicionar(self,x=None,y=None):
+        if x is None:
+            x=self.posicion_inicial_x
+        if y is None:
+            y=self.posicion_inicial_y
         self.rect_colision.x=x
         self.rect_colision.y=y
         self.rect_imagen.x=x
@@ -97,7 +105,7 @@ class Movimiento(Objeto):
             self.rect_colision.y +=self.velocidad
 
     def resetear_velocidad(self):
-        self.velocidad=3
+        self.velocidad=1
 
 
 class vida(Objeto):

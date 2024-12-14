@@ -72,7 +72,7 @@ class Arma (Movimiento):
 
     def detectar_proximo(self,objetivos):
         distancia_menor=1800
-        indice=0
+        indice=None
         for i in range(len(objetivos)):
             
             if objetivos[i].visible:
@@ -84,8 +84,10 @@ class Arma (Movimiento):
                 if distancia_total<distancia_menor:
                     distancia_menor=distancia_total
                     indice=i
-        self.apuntar(objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y)
-
+        if indice is not None:
+            self.apuntar(objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y)
+        else:
+            self.apuntar(self.rect_imagen.x-10,self.rect_imagen.y)
 
 class Bala(Movimiento):
 
@@ -115,7 +117,7 @@ class Bala(Movimiento):
 
     def detectar_proximo(self,objetivos):
         distancia_menor=1800
-        indice=0
+        indice=None
         for i in range(len(objetivos)):
             
             if objetivos[i].visible:
@@ -127,8 +129,10 @@ class Bala(Movimiento):
                 if distancia_total<distancia_menor:
                     distancia_menor=distancia_total
                     indice=i
-        return objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y
-    
+        if indice is not None:
+            return objetivos[indice].rect_imagen.x,objetivos[indice].rect_imagen.y
+        else:
+            return self.rect_imagen.x-10,self.rect_imagen.y
     def direccion(self,objetivos):
         x,y =self.detectar_proximo(objetivos)
         self.posicion_objetivo_x=x
@@ -146,4 +150,28 @@ class Bala(Movimiento):
             self.rect_colision.y+= self.velocidad * math.sin(radianes)
             self.velocidad -= friccion
 
+class Pistola(Arma):
+    def __init__(self,Balas,couldown,recarga,sonido_disparo,sonido_recarga, x=20, y=30, imagenes=..., intervalo_cambio=0):
+        super().__init__(x, y, imagenes, intervalo_cambio)
+        
+        self.sonido_bala=sonido_disparo
+        self.sonido_recarga=sonido_recarga
+        self.balas=Balas
+        self.bala_actual=len(self.balas)
+        self.couldown=couldown
+        self.recarga=recarga
 
+    def disparar(self,enemigos):
+        if self.bala_actual<len(self.balas):
+            if not self.balas[self.bala_actual].visible:
+                self.balas[self.bala_actual].disparar(self.rect_imagen.x,self.rect_imagen.y,enemigos)
+                self.sonido_bala.reproducir()
+        else:
+            self.sonido_recarga.reproducir()
+            # crear funcion recarga para continuar
+            self.bala_actual=0
+            if not self.balas[self.bala_actual].visible:
+                self.balas[self.bala_actual].disparar(self.rect_imagen.x,self.rect_imagen.y,enemigos)
+                self.sonido_bala.reproducir()
+        
+        self.bala_actual+=1

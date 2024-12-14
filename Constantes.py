@@ -12,6 +12,9 @@ boton_sonido="Sound//boton.wav"
 GOLPE_ENEMIGO="Sound//golpe_enemigo.wav"
 CURA="Sound//cura.wav"
 BALA_SONIDO="Sound//bala.wav"
+MUERTE_MONSTRUO_SONIDO="Sound//muerte_monstruo.wav"
+FONDO_INICIO_SONIDO="Sound//fondo_inicio.wav"
+FONDO_BATALLA_SONIDO="Sound//fondo_batalla.wav"
 #Personaje
 ALTO_PERSONAJE=80
 ANCHO_PERSONAJE=50

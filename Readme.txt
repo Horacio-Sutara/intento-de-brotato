@@ -8,3 +8,5 @@ Numeros por:
 Sonido por:
     freesound_community from Pixabay
     Universfield from Pixabay
+    666HeroHero from Pixabay
+    Tell Costa from Pixabay

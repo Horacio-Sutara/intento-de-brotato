@@ -10,7 +10,8 @@ class Ventana():
     def __init__(self,ancho,alto,fondo,personaje_imagen,
                  hp_imagenes,Numeros_imagen, fruta_imagen,enemigo1_imagen,boton_reintentar,
                  boton_menu,sonido_boton,sonido_golpe,sonido_cura,arma_imagen,bala_imagen,sonido_bala,
-                 dinero_imagen):
+                 dinero_imagen,
+                 fondo_inicio_sonido,fondo_batalla_sonido):
         pygame.init()
         self.ventana=pygame.display.set_mode((ancho,alto))
         pygame.display.set_caption("prueba")
@@ -25,26 +26,31 @@ class Ventana():
         self.temporizador2=Objeto.Objeto(510,20,Numeros_imagen,1000) 
         self.temporizador1=Objeto.Objeto(440,20,Numeros_imagen,10000)
 
+        self.puntaje_1=Objeto.Objeto(720,20,Numeros_imagen,1000)
+        self.puntaje_2=Objeto.Objeto(790,20,Numeros_imagen,1000)        
+        self.puntaje_3=Objeto.Objeto(860,20,Numeros_imagen,1000)
+
         self.dinero=Objeto.Objeto(610,10,dinero_imagen)
 
-        self.arma=Arma(850,250,arma_imagen)
-        self.bala=[Bala(835,210,bala_imagen) for i in range (10)]
+        self.arma=Arma(850,240,arma_imagen)
+        self.bala=[Bala(0,0,bala_imagen) for i in range (10)]
 
 
         self.menu_perder=Menu.Menu(self.ventana,fondo,420,200,boton_reintentar,420,400,boton_menu,sonido_boton)
 
-        self.golpe_enemigo=Sonido.Sonido(sonido_golpe)
+        self.golpe_enemigo=Sonido.Sonido(sonido_golpe,pygame.mixer.Channel(0))
         
 
-        self.sonido_bala=Sonido.Sonido(sonido_bala)
-        
-        self.cura=Sonido.Sonido(sonido_cura)
-
-
+        self.sonido_bala=Sonido.Sonido(sonido_bala,pygame.mixer.Channel(1))
+        self.cura=Sonido.Sonido(sonido_cura,pygame.mixer.Channel(2))
+        self.sonido_empezar=Sonido.Sonido(fondo_inicio_sonido,pygame.mixer.Channel(3))
+        self.sonido_batalla=Sonido.Sonido(fondo_batalla_sonido,pygame.mixer.Channel(3))
 
         self.golpe_enemigo.ajustar_volumen(0.2)
-        self.sonido_bala.ajustar_volumen(0.2)
-        self.cura.ajustar_volumen(0.2)
+        self.sonido_bala.ajustar_volumen(0.15)
+        self.cura.ajustar_volumen(0.25)
+        self.sonido_empezar.ajustar_volumen(0.12)
+        self.sonido_batalla.ajustar_volumen(0.12)
 
 
 
@@ -90,14 +96,21 @@ class Ventana():
         self.hp.resetear()
         self.temporizador1.cambiar_imagen_indice(indice=5)  
         self.temporizador2.cambiar_imagen_indice(indice=9)   
-        self.arma.reposicionar(850,250)
-        self.jugador.reposicionar(900,200)
+        
+        self.puntaje_1.cambiar_imagen_indice(0)
+        self.puntaje_2.cambiar_imagen_indice(0)
+        self.puntaje_3.cambiar_imagen_indice(0)
+
+        self.arma.reposicionar()
+        self.jugador.reposicionar()
         
         clock = pygame.time.Clock()
 
         self.tiempo_ronda= pygame.time.get_ticks()
-        
+        self.sonido_empezar.reproducir()
         while run:
+            self.sonido_batalla.reproducir()
+            tiempo=clock.tick(60)
             enemigo_visible=self.enemigo_visible(self.enemigos)
             #Mostrar en pantialla
             self.ventana.blit(self.fondo,(0,0))
@@ -129,15 +142,20 @@ class Ventana():
             for i in range(len(self.frutas)):
                 self.frutas[i].dibujar(self.ventana)
                 self.enemigos[i].dibujar(self.ventana)
+
+
             self.temporizador2.dibujar(self.ventana)
             self.temporizador1.dibujar(self.ventana)
-            
+            self.puntaje_1.dibujar(self.ventana)
+            self.puntaje_2.dibujar(self.ventana)
+            self.puntaje_3.dibujar(self.ventana)
+
             #Cambiar sprite
-            self.jugador.cambiar_imagen()
+            self.jugador.cambiar_imagen(tiempo=tiempo)
             for i in range(len(self.enemigos)):
-                self.enemigos[i].cambiar_imagen()
-            self.temporizador1.cambiar_imagen(True)
-            self.temporizador2.cambiar_imagen(True)
+                self.enemigos[i].cambiar_imagen(tiempo=tiempo)
+            self.temporizador1.cambiar_imagen(True,tiempo=tiempo)
+            self.temporizador2.cambiar_imagen(True,tiempo=tiempo)
 
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -171,12 +189,14 @@ class Ventana():
                         self.__generar_objeto(self.enemigos[i])
             if self.hp.hp<=0:
                 run=0
-                
+        
             
 
             pygame.display.flip()  # Actualizar pantalla
-            clock.tick(60)
         
+        self.sonido_batalla.detener()
+
+
     def enemigo_visible(self,enemigos):
         for i in enemigos:
             if i.visible:
@@ -201,5 +221,5 @@ ventana=Ventana(const.ANCHO_VENTANA,const.ALTO_VENTANA,const.BG,const.IMAGEN_PJ,
                 const.HP,const.NUMEROS,const.FRUTA,const.ENEMIGO_1,const.BOTON_REINTENTAR,
                 const.BOTON_MENU,const.boton_sonido,const.GOLPE_ENEMIGO,
                 const.CURA,const.ARMA,const.BALA,const.BALA_SONIDO,
-                const.DINERO)
+                const.DINERO,const.FONDO_INICIO_SONIDO,const.FONDO_BATALLA_SONIDO)
 ventana.juego()
