@@ -92,19 +92,27 @@ class Bala(Movimiento):
     def __init__(self, x=20, y=30, imagenes=..., intervalo_cambio=500):
         super().__init__(x, y, imagenes, intervalo_cambio)
         self.velocidad=0
-        self.adelante_x=False
-        self.adelante_y=False
-
+        self.posicion_objetivo_x=0
+        self.posicion_objetivo_y=0
+        self.izquierda_x=False
+        self.arriba_y=False
+        self.angulo=0
     def disparar(self,x,y,objetivos,velocidad_inicial=7):
         self.reposicionar(x,y)
         self.mostrar_objeto()
         self.velocidad=velocidad_inicial
-        self.direccion(objetivos)
+        self.angulo=self.direccion(objetivos)
+        
 
     def desaparecer(self):
         if self.velocidad<=0:
             self.visible=False
-    
+    def blanco(self,objetivos):
+        for objetivo in objetivos:
+            if self.verificar_colision(objetivo.rect_colision) and objetivo.visible:
+                self.visible=False
+                objetivo.visible=False
+
     def detectar_proximo(self,objetivos):
         distancia_menor=1800
         indice=0
@@ -123,27 +131,19 @@ class Bala(Movimiento):
     
     def direccion(self,objetivos):
         x,y =self.detectar_proximo(objetivos)
+        self.posicion_objetivo_x=x
+        self.posicion_objetivo_y=y
+        delta_x=x-self.rect_imagen.x
+        delta_y= y-self.rect_imagen.y
+        return math.degrees(math.atan2(delta_y, delta_x))
 
-        if self.rect_imagen.x<x:
-            self.adelante_x=True
-        else:
-            self.adelante_x=False
-        if self.rect_imagen.y<y:
-            self.adelante_y=True
-        else:
-            self.adelante_y=False
-
-    def mover(self,friccion=0.1):
-            if self.visible:
-                if self.adelante_x:
-                    self.mover_derecha()
-                else:
-                    self.mover_izquierda()
-                if self.adelante_y:
-                    self.mover_abajo()
-                else:
-                    self.mover_arriba()
-                self.velocidad-=friccion
-        
+    def mover(self, friccion=0.1):
+        if self.visible:
+            radianes = math.radians(self.angulo)
+            self.rect_imagen.x += self.velocidad * math.cos(radianes)
+            self.rect_imagen.y += self.velocidad * math.sin(radianes)
+            self.rect_colision.x+= self.velocidad * math.cos(radianes)
+            self.rect_colision.y+= self.velocidad * math.sin(radianes)
+            self.velocidad -= friccion
 
 

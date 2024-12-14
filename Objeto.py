@@ -96,6 +96,9 @@ class Movimiento(Objeto):
             self.rect_imagen.y +=self.velocidad
             self.rect_colision.y +=self.velocidad
 
+    def resetear_velocidad(self):
+        self.velocidad=3
+
 
 class vida(Objeto):
     def __init__(self, x=20, y=30, imagenes=[], intervalo_cambio=0,hp=8):

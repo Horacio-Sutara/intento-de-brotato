@@ -9,7 +9,8 @@ from Arma import Bala
 class Ventana():
     def __init__(self,ancho,alto,fondo,personaje_imagen,
                  hp_imagenes,Numeros_imagen, fruta_imagen,enemigo1_imagen,boton_reintentar,
-                 boton_menu,sonido_boton,sonido_golpe,sonido_cura,arma_imagen,bala_imagen,sonido_bala):
+                 boton_menu,sonido_boton,sonido_golpe,sonido_cura,arma_imagen,bala_imagen,sonido_bala,
+                 dinero_imagen):
         pygame.init()
         self.ventana=pygame.display.set_mode((ancho,alto))
         pygame.display.set_caption("prueba")
@@ -23,9 +24,11 @@ class Ventana():
 
         self.temporizador2=Objeto.Objeto(510,20,Numeros_imagen,1000) 
         self.temporizador1=Objeto.Objeto(440,20,Numeros_imagen,10000)
-             
+
+        self.dinero=Objeto.Objeto(610,10,dinero_imagen)
+
         self.arma=Arma(850,250,arma_imagen)
-        self.bala=[Bala(800,200,bala_imagen) for i in range (10)]
+        self.bala=[Bala(835,210,bala_imagen) for i in range (10)]
 
 
         self.menu_perder=Menu.Menu(self.ventana,fondo,420,200,boton_reintentar,420,400,boton_menu,sonido_boton)
@@ -42,7 +45,6 @@ class Ventana():
         self.golpe_enemigo.ajustar_volumen(0.2)
         self.sonido_bala.ajustar_volumen(0.2)
         self.cura.ajustar_volumen(0.2)
-
 
 
 
@@ -66,20 +68,22 @@ class Ventana():
             for objeto in objetos:
                 objeto.mover_abajo(3)
 
-    def atrapar(self, enemigos, personaje):
+    def atrapar(self, enemigos, personaje, velocidad=None):
         for i in range(len(enemigos)):
-            if enemigos[i].rect_colision.x>personaje.rect_colision.x:
-                enemigos[i].mover_izquierda()
-            if enemigos[i].rect_colision.x<personaje.rect_colision.x:
-                enemigos[i].mover_derecha()
-            if enemigos[i].rect_colision.y<personaje.rect_colision.y:
-                enemigos[i].mover_abajo()
-            if enemigos[i].rect_colision.y>personaje.rect_colision.y:
-                enemigos[i].mover_arriba()
+            if enemigos[i].rect_colision.x>personaje.rect_colision.x and enemigos[i].visible:
+                enemigos[i].mover_izquierda(velocidad)
+            if enemigos[i].rect_colision.x<personaje.rect_colision.x and enemigos[i].visible:
+                enemigos[i].mover_derecha(velocidad)
+            if enemigos[i].rect_colision.y<personaje.rect_colision.y and enemigos[i].visible:
+                enemigos[i].mover_abajo(velocidad)
+            if enemigos[i].rect_colision.y>personaje.rect_colision.y and enemigos[i].visible:
+                enemigos[i].mover_arriba(velocidad)
     def ejecutar(self):
         for i in range (len(self.frutas)):
             self.frutas[i].desaparecer()    
             self.enemigos[i].desaparecer()
+            self.enemigos[i].resetear_velocidad()
+
             self.bala[i].desaparecer()
 
         run =True
@@ -88,6 +92,11 @@ class Ventana():
         self.temporizador2.cambiar_imagen_indice(indice=9)   
         self.arma.reposicionar(850,250)
         self.jugador.reposicionar(900,200)
+        
+        clock = pygame.time.Clock()
+
+        self.tiempo_ronda= pygame.time.get_ticks()
+        
         while run:
             enemigo_visible=self.enemigo_visible(self.enemigos)
             #Mostrar en pantialla
@@ -95,6 +104,7 @@ class Ventana():
             self.jugador.dibujar(self.ventana)
             self.arma.dibujar(self.ventana)
             self.hp.dibujar(self.ventana)
+            self.dinero.dibujar(self.ventana)
 
             self.arma.detectar_proximo(self.enemigos)
             if enemigo_visible:
@@ -103,12 +113,17 @@ class Ventana():
                         self.bala[i].disparar(self.arma.rect_imagen.x,self.arma.rect_imagen.y,self.enemigos)
                         self.sonido_bala.reproducir()
                         i=len(self.bala)
+                    else:
+                        self.bala[i].blanco(self.enemigos)
+
             for i in self.bala:
-                i.desaparecer()
-                i.mover()
-                i.dibujar(self.ventana)
+                if i.visible:
+                    i.blanco(self.enemigos)
+                    i.desaparecer()
+                    i.mover()
+                    i.dibujar(self.ventana)
 
-
+            
 
 
             for i in range(len(self.frutas)):
@@ -128,7 +143,13 @@ class Ventana():
                 if event.type==pygame.QUIT:
                     run=False
             self.__presion_teclas([self.jugador,self.arma])
-            self.atrapar(self.enemigos,self.jugador)
+
+            if pygame.time.get_ticks() -self.tiempo_ronda>15000:
+                self.tiempo_ronda=pygame.time.get_ticks()
+                self.enemigos[0].velocidad+=0.1
+            self.atrapar(self.enemigos,self.jugador,self.enemigos[0].velocidad)
+            
+            
             for i in range(len(self.frutas)):
                 if self.jugador.verificar_colision(self.frutas[i].rect_colision) and self.frutas[i].visible:
                     self.frutas[i].desaparecer()
@@ -148,13 +169,13 @@ class Ventana():
                     aparecer_enemigo=random.randint(0,1000)
                     if aparecer_enemigo==10:
                         self.__generar_objeto(self.enemigos[i])
-            if self.hp.hp==0:
+            if self.hp.hp<=0:
                 run=0
                 
             
 
             pygame.display.flip()  # Actualizar pantalla
-            
+            clock.tick(60)
         
     def enemigo_visible(self,enemigos):
         for i in enemigos:
@@ -179,5 +200,6 @@ class Ventana():
 ventana=Ventana(const.ANCHO_VENTANA,const.ALTO_VENTANA,const.BG,const.IMAGEN_PJ,
                 const.HP,const.NUMEROS,const.FRUTA,const.ENEMIGO_1,const.BOTON_REINTENTAR,
                 const.BOTON_MENU,const.boton_sonido,const.GOLPE_ENEMIGO,
-                const.CURA,const.ARMA,const.BALA,const.BALA_SONIDO)
+                const.CURA,const.ARMA,const.BALA,const.BALA_SONIDO,
+                const.DINERO)
 ventana.juego()

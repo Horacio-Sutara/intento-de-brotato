@@ -67,7 +67,9 @@ NUMEROS=[
     pygame.image.load('image/numero8.png'), 
     pygame.image.load('image/numero9.png')
 ]
-
+DINERO=[
+    pygame.image.load('image/dinero.png'), 
+]
 ENEMIGO_1=[
     pygame.image.load('image/monstruo01.png'), 
     pygame.image.load('image/monstruo02.png'),
